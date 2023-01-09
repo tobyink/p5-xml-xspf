@@ -157,7 +157,7 @@ XML::XSPF - DSL for a subset of XSPF data
 
 This is a quick demo for creating a DSL in Perl.
 
-=head2 FUNCTIONS
+=head2 Functions
 
 None are exported by default. C<< use XML::XSPF -all >> to import them all
 into your namespace. C<< use XML::XSPF qw( playlist track location ) >> to
@@ -165,8 +165,8 @@ export some by name. C<< use XML::XSPF -all, -lexical >> to import lexically.
 
 =head3 C<< playlist >>
 
-Returns a playlist. Should be followed by a block setting an optional title
-for the playlist, and zero or more tracks.
+Returns a playlist hashref. Should be followed by a block setting an optional
+title for the playlist, and zero or more tracks.
 
 =head3 C<< track >>
 
