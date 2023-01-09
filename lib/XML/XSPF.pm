@@ -20,7 +20,8 @@ use Exporter::Shiny qw(
 	location
 );
 
-# Scratchpad for storing playlists and tracks while they are being built.
+# Scratchpad for storing playlists and tracks while they are
+# being built.
 my $current_playlist;
 my $current_track;
 
@@ -67,7 +68,7 @@ sub track (&) {
 	# Run the block we were given.
 	$block->();
 
-	# It succeeded, so add the built track to the playlist. Return nothing.
+	# Add the built track to the playlist. Return nothing.
 	push @{ $current_playlist->{trackList} //= [] }, $current_track;
 	return;
 }
@@ -78,9 +79,9 @@ sub title ($) {
 	# It accepts a string.
 	my $string = shift;
 
-	# If there's a track being built, that's the target. Otherwise, the
-	# target is the playlist being built. It's an error to call this function
-	# if neither is being built.
+	# If there's a track being built, that's the target. Otherwise,
+	# the target is the playlist being built. It's an error to call
+	# this function if neither is being built.
 	my $target = $current_track // $current_playlist;
 	$target // croak( "Title outside playlist or track" );
 
