@@ -4,10 +4,14 @@
 
 `XML-XSPF`
 	:runtime-requirement    [ :on "perl 5.010001"^^:CpanId ];
+	:runtime-requirement    [ :on "Carp"^^:CpanId ];
+	:runtime-requirement    [ :on "Exporter::Shiny 1.006000"^^:CpanId ];
+	:runtime-requirement    [ :on "Scope::Guard"^^:CpanId ];
 	:test-requirement       [ :on "Test2::V0"^^:CpanId ];
 	:test-requirement       [ :on "Test2::Tools::Spec"^^:CpanId ];
 	:test-requirement       [ :on "Test2::Require::AuthorTesting"^^:CpanId ];
 	:test-requirement       [ :on "Test2::Require::Module"^^:CpanId ];
+	:test-requirement       [ :on "Data::Dumper"^^:CpanId ];
 	:develop-recommendation [ :on "Dist::Inkt 0.001"^^:CpanId ];
 	.
 
