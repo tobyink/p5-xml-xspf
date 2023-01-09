@@ -7,7 +7,11 @@ package XML::XSPF;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
+# Utility functions we need.
 use Carp qw( croak );
+use Scope::Guard qw( guard );
+
+# Functions we will export.
 use Exporter::Shiny qw(
 	playlist
 	track
@@ -15,62 +19,102 @@ use Exporter::Shiny qw(
 	creator
 	location
 );
-use Scope::Guard qw( guard );
 
-my %CURRENT;
+# Scratchpad for storing playlists and tracks while they are being built.
+my $current_playlist;
+my $current_track;
 
+# Private function useful for unit tests.
 sub __current {
-	return \%CURRENT; # useful for unit tests
+	return $current_playlist;
 }
 
+# Function called to define a new playlist.
 sub playlist (&) {
+
+	# It accepts a block of Perl code (which will define tracks, etc).
 	my $block = shift;
 
-	$CURRENT{playlist} and croak( "Nested playlist" );
-	$CURRENT{playlist} = {};
-	my $guard = guard { delete $CURRENT{playlist} };
+	# Ensure that there isn't already a half-built playlist, and then
+	# start building one. The guard ensures that the playlist will be
+	# cleaned up at the end of this function, even if an exception gets
+	# thrown later.
+	$current_playlist and croak( "Nested playlist" );
+	$current_playlist = {};
+	my $guard = guard { undef $current_playlist };
+
+	# Run the block we were given.
 	$block->();
 
-	return $CURRENT{playlist};
+	# Return the complete playlist.
+	return $current_playlist;
 }
 
+# Function called to define a new track.
 sub track (&) {
+
+	# It accepts a block of Perl code (which will add track details).
 	my $block = shift;
 
-	$CURRENT{track} and croak( "Nested track" );
-	$CURRENT{playlist} or croak( "Track outside playlist" );
-	$CURRENT{track} = {};
-	my $guard = guard { delete $CURRENT{track} };
+	# Ensure that there isn't already a half-built track, and we haven't
+	# been called outside a playlist, and then start building a track.
+	# The guard ensures that the track will be cleaned up at the end of
+	# this function, even if an exception gets thrown later.
+	$current_track and croak( "Nested track" );
+	$current_playlist or croak( "Track outside playlist" );
+	$current_track = {};
+	my $guard = guard { undef $current_track };
+
+	# Run the block we were given.
 	$block->();
-	push @{ $CURRENT{playlist}->{trackList} //= [] }, $CURRENT{track};
 
+	# It succeeded, so add the built track to the playlist. Return nothing.
+	push @{ $current_playlist->{trackList} //= [] }, $current_track;
 	return;
 }
 
+# Function to set the title for current track or playlist.
 sub title ($) {
-	my $title = shift;
 
-	my $target = $CURRENT{track} // $CURRENT{playlist} // croak( "Title outside playlist or track" );
-	$target->{title} = $title;
+	# It accepts a string.
+	my $string = shift;
 
+	# If there's a track being built, that's the target. Otherwise, the
+	# target is the playlist being built. It's an error to call this function
+	# if neither is being built.
+	my $target = $current_track // $current_playlist;
+	$target // croak( "Title outside playlist or track" );
+
+	# Set the title. Return nothing.
+	$target->{title} = $string;
 	return;
 }
 
+# Function to set the location for current track.
 sub location ($) {
-	my $location = shift;
 
-	my $target = $CURRENT{track} // croak( "Location outside track" );
-	$target->{location} = $location;
+	# It accepts a string.
+	my $string = shift;
 
+	# It's an error to call this function if no track is being built.
+	$current_track // croak( "Location outside track" );
+
+	# Set the location of the current track. Return nothing.
+	$current_track->{location} = $string;
 	return;
 }
 
+# Function to set the creator for current track.
 sub creator ($) {
-	my $creator = shift;
 
-	my $target = $CURRENT{track} // croak( "Creator outside track" );
-	$target->{creator} = $creator;
+	# It accepts a string.
+	my $string = shift;
 
+	# It's an error to call this function if no track is being built.
+	$current_track // croak( "Creator outside track" );
+
+	# Set the creator of the current track. Return nothing.
+	$current_track->{creator} = $string;
 	return;
 }
 
