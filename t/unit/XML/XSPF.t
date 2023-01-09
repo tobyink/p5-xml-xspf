@@ -55,7 +55,7 @@ describe "function `playlist`" => sub {
 		};
 
 		like( $e, qr/Nested playlist/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
 	};
 
 };
@@ -86,7 +86,8 @@ describe "function `track`" => sub {
 		};
 
 		like( $e, qr/Nested track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 	};
 
 	tests 'it must be nested in a playlist' => sub {
@@ -96,7 +97,8 @@ describe "function `track`" => sub {
 		};
 
 		like( $e, qr/Track outside playlist/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 	};
 
 };
@@ -125,7 +127,8 @@ describe "function `title`" => sub {
 		};
 
 		like( $e, qr/Title outside playlist or track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 	};
 
 };
@@ -151,14 +154,15 @@ describe "function `location`" => sub {
 		};
 
 		like( $e, qr/Location outside track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 
 		my $e2 = dies {
 			my $c = playlist { location 'XYZ' };
 		};
 
 		like( $e2, qr/Location outside track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 	};
 
 };
@@ -184,14 +188,15 @@ describe "function `creator`" => sub {
 		};
 
 		like( $e, qr/Creator outside track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 
 		my $e2 = dies {
 			my $c = playlist { creator 'XYZ' };
 		};
 
 		like( $e2, qr/Creator outside track/i, 'correct exception' );
-		is( $CLASS->__current, U(), 'cleaned up internals' );
+		is( $CLASS->__current_playlist, U(), 'cleaned up playlist internals' );
+		is( $CLASS->__current_track,    U(), 'cleaned up track internals' );
 	};
 
 };

@@ -24,10 +24,9 @@ use Exporter::Shiny qw(
 my $current_playlist;
 my $current_track;
 
-# Private function useful for unit tests.
-sub __current {
-	return $current_playlist;
-}
+# Private functions useful for unit tests.
+sub __current_playlist { $current_playlist }
+sub __current_track    { $current_track }
 
 # Function called to define a new playlist.
 sub playlist (&) {
